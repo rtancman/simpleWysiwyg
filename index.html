@@ -1,0 +1,200 @@
+<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+<style>
+ul.bootstrap-wysing-toolbar:after {
+    clear: both;
+    content: "";
+    display: table;
+}
+ul.bootstrap-wysing-toolbar {
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+ul.bootstrap-wysing-toolbar > li {
+    display: list-item;
+    float: left;
+    list-style: none outside none;
+    margin: 0 5px 10px 0;
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+<script type="text/javascript">
+var simpleWysing = function(element,options){
+	this.simpleWysingOptions = {};
+	this.setDocMode = function(bToSource) {
+	  var oContent,
+	  oDoc=this.oDoc;
+	  if (bToSource) {
+	    oContent = document.createTextNode(oDoc.html());
+	    oDoc.html("");
+	    var oPre = document.createElement("pre");
+	    this.oDoc.contentEditable = false;
+	    oPre.id = "sourceText";
+	    oPre.contentEditable = true;
+	    oPre.appendChild(oContent);
+	    $(this.oDoc).append(oPre);
+	  } else {
+	    if (document.all) {
+	      this.oDoc.text(this.oDoc.html());
+	    } else {
+	      oContent = document.createRange();
+	      oContent.selectNodeContents(oDoc.firstChild);
+	      this.oDoc.html(oContent.toString());
+	    }
+	    this.oDoc.contentEditable = true;
+	  }
+	  this.oDoc.focus();
+	};
+	this.formatDoc = function (sCmd, sValue) {
+	  if (this.validateMode()){
+	  	document.execCommand(sCmd, false, sValue); 
+	  	this.oDoc.focus();
+	  }
+	};
+	this.validateMode = function () {
+	  if (!document.compForm.switchMode.checked) { 
+	  	return true ; 
+	  }
+	  alert("Uncheck \"Show HTML\".");
+	  this.oDoc.focus();
+	  return false;
+	}
+	this.image = function(){
+		if(this.checkElement()){
+			var img = document.createElement('img');
+			img.src = 'http://static.personare.com.br/img/navigation/header/logo.png';
+			var selection = this.getDocumentSelection();
+			var range = selection.getRangeAt(0);
+			range.insertNode(img);
+		}
+	};
+	this.getDocumentSelection = function(){
+		return document.defaultView.getSelection();
+	};
+	this.checkElement = function(){
+		if($(this.element).is(this.getDocumentSelection().focusNode.parentElement)){
+			return true;
+		}else{
+			return false;
+		}		
+	};
+	this.loadAction = function(btnElement){
+		var action = $(btnElement).attr('data-command');
+		switch (action){
+			case "bold": 
+				this.formatDoc('bold');
+			break;
+			case "italic":
+				this.formatDoc('italic');
+			break;
+			case "underline":
+				this.formatDoc('underline');
+			break;			
+			case "undo":
+				this.formatDoc('undo');
+			break;
+			case "redo":
+				this.formatDoc('redo');
+			break;
+			default: false
+		}
+	};
+	var target = jQuery.extend( this.simpleWysingOptions, options );
+	this.element = $(element);
+
+ 	this.oDoc = $(element);
+  	this.sDefTxt = this.oDoc.innerHTML;
+  	if(this.oDoc.html() == ""){
+  		this.oDoc.html(this.oDoc.attr('placeholder'));
+  	}
+  	if (document.compForm.switchMode.checked) { 
+  		this.setDocMode(true); 
+  	}
+
+}
+var objSimpleWysing = null;
+var objSimpleWysing2 = null;
+$(document).ready(function(){
+	objSimpleWysing = new simpleWysing("#richTextEditor");
+	$('#toolbar-1.bootstrap-wysing-toolbar .action-simple-wysing').live('click',function(){
+		objSimpleWysing.loadAction(this);
+	});
+	$('#richTextEditorSwitchBox').live('click',function(){
+		objSimpleWysing.setDocMode(this.checked);
+	});
+});
+</script>
+
+<div class="container">
+<h1>Simple Wysing</h1>
+<hr>
+<ul id="toolbar-1" class="bootstrap-wysing-toolbar" style="">
+	<!--li class="dropdown">
+		<a href="#" data-toggle="dropdown" class="btn dropdown-toggle"><i class="icon-font"></i>&nbsp;<span class="current-font">Normal text</span>&nbsp;<b class="caret"></b></a>
+		<ul class="dropdown-menu">
+			<li><a tabindex="-1" data-command-value="div" data-command="formatBlock" href="javascript:;" unselectable="on">Normal text</a></li>
+			<li><a tabindex="-1" data-command-value="h1" data-command="formatBlock" href="javascript:;" unselectable="on">Heading 1</a></li>
+			<li><a tabindex="-1" data-command-value="h2" data-command="formatBlock" href="javascript:;" unselectable="on">Heading 2</a></li>
+			<li><a tabindex="-1" data-command-value="h3" data-command="formatBlock" href="javascript:;" unselectable="on">Heading 3</a></li>
+		</ul>
+	</li -->
+	<li><div class="btn-group">
+			<a id="bold" tabindex="-1" title="CTRL+B" data-command="bold" class="btn action-simple-wysing" href="javascript:;" unselectable="on">Bold</a>
+			<a tabindex="-1" title="CTRL+I" data-command="italic" class="btn action-simple-wysing" href="javascript:;" unselectable="on">Italic</a>
+			<a tabindex="-1" title="CTRL+U" data-command="underline" class="btn action-simple-wysing" href="javascript:;" unselectable="on">Underline</a>
+		</div>
+	</li>
+	<li>
+		<div class="btn-group">
+			<a tabindex="-1" title="Undo" data-command="undo" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-chevron-left"></i></a>
+			<a tabindex="-1" title="Redo" data-command="redo" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-chevron-right"></i></a>
+			<!--
+			<a tabindex="-1" title="Unordered list" data-command="insertUnorderedList" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-list"></i> </a>
+			<a tabindex="-1" title="Ordered list" data-command="insertOrderedList" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-th-list"></i></a>
+			<a tabindex="-1" title="Outdent" data-command="Outdent" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-indent-right"></i> </a>
+			<a tabindex="-1" title="Indent" data-command="Indent" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-indent-left"></i> </a>
+			-->
+		</div>
+	</li>
+	<!--li><div class="bootstrap-insert-link-modal modal hide fade">
+			<div class="modal-header">
+				<a data-dismiss="modal" class="close">×</a>
+				<h3>Insert link</h3>
+			</div>
+			<div class="modal-body">
+				<input class="bootstrap-insert-link-url input-xlarge"
+					value="http://">
+			</div>
+			<div class="modal-footer">
+				<a data-dismiss="modal" class="btn" href="#">Cancel</a><a
+					data-dismiss="modal" class="btn btn-primary" href="#">Insert link</a>
+			</div>
+		</div> <a tabindex="-1" title="Insert link" data-command="createLink" class="btn" href="javascript:;" unselectable="on"><i class="icon-share"></i> </a>
+	</li>
+	<li><div
+			class="bootstrap-insert-image-modal modal hide fade">
+			<div class="modal-header">
+				<a data-dismiss="modal" class="close">×</a>
+				<h3>Insert image</h3>
+			</div>
+			<div class="modal-body">
+				<input class="bootstrap-insert-image-url input-xlarge"
+					value="http://">
+			</div>
+			<div class="modal-footer">
+				<a data-dismiss="modal" class="btn" href="#">Cancel</a><a
+					data-dismiss="modal" class="btn btn-primary" href="#">Insert image</a>
+			</div>
+		</div> <a tabindex="-1" title="Insert image"
+		data-command="insertImage" class="btn" href="javascript:;"
+		unselectable="on"><i class="icon-picture"></i> </a>
+	</li-->
+</ul>
+<form name="compForm">
+	<div class="well" contenteditable="true" id="richTextEditor" placeholder="Enter text..."></div>
+	<input type="checkbox" name="switchMode" id="richTextEditorSwitchBox" />Show HTML
+</form>
+</div>
+
+
