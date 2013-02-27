@@ -16,6 +16,9 @@ ul.bootstrap-wysing-toolbar > li {
     list-style: none outside none;
     margin: 0 5px 10px 0;
 }
+ul.bootstrap-wysing-toolbar .btn{
+	height: 20px;
+}
 .simple-wysing-needs-option.off{
 	display: none;
 }
@@ -66,12 +69,35 @@ var simpleWysiwyg = function(element,options){
 	  this.oDoc.focus();
 	  return false;
 	}
-	this.createLink = function(){
-		var obj = this, value, opt, tabInsertLink = $('#toolbar-1 .simple-wysing-insert-link');
-		tabInsertLink.slideDown('slow', function() {
-			$(this).removeClass('off');
+	this.getDocumentSelection = function(){
+		return document.defaultView.getSelection();
+	};
+	this.getDocumentContentSelection = function(){
+		if(window.getSelection){
+			return window.getSelection();
+		}else if(document.getSelection){
+			return document.getSelection();
+		}else if(document.selection){
+			return document.selection.createRange().text;
+		}else{
+			return "";
+		}
+	};
+	this.checkElement = function(){
+		if($(this.element).is(this.getDocumentSelection().focusNode.parentElement)){
+			return true;
+		}else{
+			return false;
+		}		
+	};
+	this.insertLink = function(){
+		var obj = this, value, opt, tabInsertLink = $('#toolbar-1 .simple-wysing-options-link');
+		$('#toolbar-1 .bootstrap-wysing-toolbar .action-simple-wysing-link').live('click',function(){
+			tabInsertLink.slideDown('slow', function() {
+				$(this).removeClass('off');
+			});
 		});
-		$('#toolbar-1 .simple-wysing-insert-link .action-simple-wysing-link').live('click',function(){
+		$('#toolbar-1 .simple-wysing-options-link .action-simple-wysing-insert').live('click',function(){
 			opt = $(this).attr('data-insert-link');
 			if(opt == "ok"){
 				value = $("#toolbar-1 .simple-wysing-insert-link .simple-wysing-insert-link-url").val();
@@ -82,80 +108,53 @@ var simpleWysiwyg = function(element,options){
 			});
 		});
 	};
+	this.createEmbed = function(){
+		document.execCommand('insertHTML', false, '<span>'+t+'</span>'); 
+	  	this.oDoc.focus();
+	};
+	this.loadOptions = function(){
+		
+	};
 	this.insertImage = function(){
-		var obj = this, range = null, selection = null, img = null, id, src, width, height, alt, position, opt, tabInsertLink = $('#toolbar-1 .simple-wysing-insert-image');
-		tabInsertLink.slideDown('slow', function() {
-			$(this).removeClass('off');
+		var obj = this, range = null, selection = null, img = null, id, src, width, height, alt, position, opt, tabInsertLink = $('#toolbar-1 .simple-wysing-options-image');
+		$('#toolbar-1 .bootstrap-wysing-toolbar .action-simple-wysing-image').live('click',function(){
+			tabInsertLink.slideDown('slow', function() {
+				$(this).removeClass('off');
+			});
 		});
-		$('#toolbar-1 .simple-wysing-insert-image .action-simple-wysing-link').live('click',function(){
+		$('#toolbar-1 .simple-wysing-options-image .action-simple-wysing-insert').live('click',function(){
 			opt = $(this).attr('data-insert-link');
+			console.log('aaa');
 			if(opt == "ok"){
-				src = $("#toolbar-1 .simple-wysing-insert-image .simple-wysing-insert-image-url").val();
-				width = $("#toolbar-1 .simple-wysing-insert-image .simple-wysing-insert-image-width").val();
-				height = $("#toolbar-1 .simple-wysing-insert-image .simple-wysing-insert-image-height").val();
-				alt = $("#toolbar-1 .simple-wysing-insert-image .simple-wysing-insert-image-alt").val();
-				id = "img_"+obj.createDate.getTime();
-				img = document.createElement('img');
+				src 	= $("#toolbar-1 .simple-wysing-options-image .simple-wysing-insert-image-url").val();
+				width 	= $("#toolbar-1 .simple-wysing-options-image .simple-wysing-insert-image-width").val();
+				height 	= $("#toolbar-1 .simple-wysing-options-image .simple-wysing-insert-image-height").val();
+				alt 	= $("#toolbar-1 .simple-wysing-options-image .simple-wysing-insert-image-alt").val();
+				id 		= "img_"+obj.createDate.getTime();
+				img 	= document.createElement('img');
 			  	img.setAttribute('id',id);
-				img.src = src;
-				img.width = width;
-				img.height = height;
-				img.alt = alt;
-				selection = obj.getDocumentSelection();
-				range = selection.getRangeAt(0);
+				img.src 	= src;
+				img.width 	= width;
+				img.height 	= height;
+				img.alt 	= alt;
+				selection 	= obj.getDocumentSelection();
+				range 		= selection.getRangeAt(0);
 				range.insertNode(img);
+				obj.oDoc.focus();
 			}
 			tabInsertLink.slideUp('slow', function() {
 				$(this).addClass('off');
 			});
 		});		
 	};
-	this.getDocumentSelection = function(){
-		return document.defaultView.getSelection();
-	};
-	this.checkElement = function(){
-		if($(this.element).is(this.getDocumentSelection().focusNode.parentElement)){
-			return true;
-		}else{
-			return false;
-		}		
-	};
-	this.loadAction = function(btnElement){
-		var action = $(btnElement).attr('data-command');
-		var value = $(btnElement).attr('data-command-value');
-		switch (action){
-			case "formatblock": 
-				this.formatDoc('formatblock',value);
-			break;
-			case "createlink":
-				this.createLink(action);
-			break;
-			case "insertimage":
-				this.insertImage(action);
-			break;			
-			/*case "undo":
-				this.formatDoc('undo');
-			break;
-			case "redo":
-				this.formatDoc('redo');
-			break;
-			case "insertUnorderedList":
-				this.formatDoc('insertunorderedlist');
-			break;
-			case "insertOrderedList":
-				this.formatDoc('insertorderedlist');
-			break;
-			case "Outdent":
-				this.formatDoc('outdent');
-			break;
-			case "Indent":
-				this.formatDoc('indent');
-			break;
-			case "formatblock":
-				this.formatDoc('formatblock',value);
-			break;*/
-			default: this.formatDoc(action);
-		}
+	this.insertByAction = function(){
+		var obj = this, action, value;
+		$('#toolbar-1 .bootstrap-wysing-toolbar .action-simple-wysing').live('click',function(){
+			objsimpleWysiwyg.loadAction(this);
+			action = $(btnElement).attr('data-command');
+			value = $(btnElement).attr('data-command-value');
+			obj.formatDoc(action,value);		
+		});
 	};
 
 	var target = jQuery.extend( this.simpleWysiwygOptions, options );
@@ -170,14 +169,13 @@ var simpleWysiwyg = function(element,options){
   	if (document.compForm.switchMode.checked) { 
   		this.setDocMode(true); 
   	}
-
+  	this.insertByAction();
+  	this.insertLink();
+  	this.insertImage();
 }
 var objsimpleWysiwyg = null;
 $(document).ready(function(){
 	objsimpleWysiwyg = new simpleWysiwyg("#richTextEditor");
-	$('#toolbar-1 .bootstrap-wysing-toolbar .action-simple-wysing').live('click',function(){
-		objsimpleWysiwyg.loadAction(this);
-	});
 	$('#richTextEditorSwitchBox').live('click',function(){
 		objsimpleWysiwyg.setDocMode(this.checked);
 	});
@@ -189,56 +187,54 @@ $(document).ready(function(){
 <hr>
 <div id="toolbar-1">
 	<ul class="bootstrap-wysing-toolbar">
-		<li class="dropdown">
-			<a href="#" data-toggle="dropdown" class="btn dropdown-toggle"><i class="icon-font"></i>&nbsp;<span class="current-font">Normal text</span>&nbsp;<b class="caret"></b></a>
-			<ul class="dropdown-menu">
-				<li><a tabindex="-1" class="action-simple-wysing" data-command-value="div"   data-command="formatblock" href="javascript:;" unselectable="on">Normal text</a></li>
-				<li><a tabindex="-1" class="action-simple-wysing" data-command-value="h1" data-command="formatblock" href="javascript:;" unselectable="on">Heading 1</a></li>
-				<li><a tabindex="-1" class="action-simple-wysing" data-command-value="h2" data-command="formatblock" href="javascript:;" unselectable="on">Heading 2</a></li>
-				<li><a tabindex="-1" class="action-simple-wysing" data-command-value="h3" data-command="formatblock" href="javascript:;" unselectable="on">Heading 3</a></li>
-				<li><a tabindex="-1" class="action-simple-wysing" data-command-value="h4" data-command="formatblock" href="javascript:;" unselectable="on">Heading 4</a></li>
-				<li><a tabindex="-1" class="action-simple-wysing" data-command-value="h5" data-command="formatblock" href="javascript:;" unselectable="on">Heading 5</a></li>
-				<li><a tabindex="-1" class="action-simple-wysing" data-command-value="h6" data-command="formatblock" href="javascript:;" unselectable="on">Heading 6</a></li>
-				<li><a tabindex="-1" class="action-simple-wysing" data-command-value="p" data-command="formatblock" href="javascript:;" unselectable="on">Paragraph</a></li>
-			</ul>
-		</li>
-		<li><div class="btn-group">
-				<a id="bold" tabindex="-1" title="CTRL+B" data-command="bold" class="btn action-simple-wysing" href="javascript:;" unselectable="on">Bold</a>
-				<a tabindex="-1" title="CTRL+I" data-command="italic" class="btn action-simple-wysing" href="javascript:;" unselectable="on">Italic</a>
-				<a tabindex="-1" title="CTRL+U" data-command="underline" class="btn action-simple-wysing" href="javascript:;" unselectable="on">Underline</a>
-			</div>
-		</li>
 		<li>
 			<div class="btn-group">
-				<a tabindex="-1" title="Undo" data-command="undo" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-chevron-left"></i></a>
-				<a tabindex="-1" title="Redo" data-command="redo" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-chevron-right"></i></a>
+				<a title="font" data-toggle="dropdown" class="btn" href="javascript:;" unselectable="on"><i class="icon-font"></i> <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a class="action-simple-wysing" data-command-value="div" data-command="formatblock" href="javascript:;" unselectable="on">Normal text</a></li>
+					<li><a class="action-simple-wysing" data-command-value="h1" data-command="formatblock" href="javascript:;" unselectable="on">Heading 1</a></li>
+					<li><a class="action-simple-wysing" data-command-value="h2" data-command="formatblock" href="javascript:;" unselectable="on">Heading 2</a></li>
+					<li><a class="action-simple-wysing" data-command-value="h3" data-command="formatblock" href="javascript:;" unselectable="on">Heading 3</a></li>
+					<li><a class="action-simple-wysing" data-command-value="h4" data-command="formatblock" href="javascript:;" unselectable="on">Heading 4</a></li>
+					<li><a class="action-simple-wysing" data-command-value="h5" data-command="formatblock" href="javascript:;" unselectable="on">Heading 5</a></li>
+					<li><a class="action-simple-wysing" data-command-value="h6" data-command="formatblock" href="javascript:;" unselectable="on">Heading 6</a></li>
+					<li><a class="action-simple-wysing" data-command-value="p" data-command="formatblock" href="javascript:;" unselectable="on">Paragraph</a></li>
+				</ul>
+
+				<a title="bold" data-command="bold" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-bold"></i></a>
+				<a title="italic" data-command="italic" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-italic"></i></a>
+				<a title="underline" data-command="underline" class="btn action-simple-wysing" href="javascript:;" unselectable="on">Underline</a>
+
+				<a title="Unordered list" data-command="insertunorderedlist" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-list"></i> </a>
+				<a title="Ordered list" data-command="insertorderedlist" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-th-list"></i></a>
+				<a title="Outdent" data-command="outdent" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-indent-right"></i> </a>
+				<a title="Indent" data-command="indent" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-indent-left"></i> </a>
 				
-				<a tabindex="-1" title="Unordered list" data-command="insertunorderedlist" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-list"></i> </a>
-				<a tabindex="-1" title="Ordered list" data-command="insertorderedlist" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-th-list"></i></a>
-				<a tabindex="-1" title="Outdent" data-command="outdent" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-indent-right"></i> </a>
-				<a tabindex="-1" title="Indent" data-command="indent" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-indent-left"></i> </a>
+				<a title="Indent" data-command="justifyleft" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-align-left"></i> </a>
+				<a title="Indent" data-command="justifycenter" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-align-center"></i> </a>
+				<a title="Indent" data-command="justifyright" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-align-right"></i> </a>
 				
-			</div>
-		</li>
-		<li>
-			<div class="btn-group">
-			    <a tabindex="-1" title="Insert link" data-command="createlink" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-globe"></i> </a>
-			    <a tabindex="-1" title="Insert image" data-command="insertimage" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-picture"></i> </a>
+				<a title="Undo" data-command="undo" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-chevron-left"></i></a>
+				<a title="Redo" data-command="redo" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-chevron-right"></i></a>
+
+			    <a title="Insert link" data-command="createlink" class="btn action-simple-wysing-link" href="javascript:;" unselectable="on"><i class="icon-globe"></i> </a>
+			    <a title="Insert image" data-command="insertimage" class="btn action-simple-wysing-image" href="javascript:;" unselectable="on"><i class="icon-picture"></i> </a>
+			    <a title="Insert Embed" data-command="createembed" class="btn action-simple-wysing-embed" href="javascript:;" unselectable="on"><i class="icon-facetime-video"></i> </a>
 			</div>
 		</li>
 	</ul>
-	<div class="simple-wysing-needs-option off simple-wysing-insert-link input-append">
+	<div class="simple-wysing-needs-option simple-wysing-options-link off">
 	    <input class="span4 simple-wysing-input-action simple-wysing-insert-link-url" id="appendedInputButton" type="text" value="http://" />
-	    <button class="btn btn-success action-simple-wysing-link" data-insert-link="ok" type="button"><i class="icon-ok"></i></button>
-	    <button class="btn btn-danger action-simple-wysing-link" data-insert-link="remove" type="button"><i class="icon-remove"></i></button>
+	    <button class="btn btn-success action-simple-wysing-insert" data-insert-link="ok" type="button"><i class="icon-ok"></i></button>
+	    <button class="btn btn-danger action-simple-wysing-insert" data-insert-link="remove" type="button"><i class="icon-remove"></i></button>
 	</div>
-	<div class="simple-wysing-needs-option off simple-wysing-insert-image">
+	<div class="simple-wysing-needs-option simple-wysing-options-image off">
 	    <input class="span4 simple-wysing-input-action simple-wysing-insert-image-url" type="text" value="http://" />
 	    <input class="span2 simple-wysing-input-action simple-wysing-insert-image-width" type="text" value="" placeholder="width" />
 	    <input class="span2 simple-wysing-input-action simple-wysing-insert-image-heigh" type="text" value="" placeholder="height" />
 	    <input class="span2 simple-wysing-input-action simple-wysing-insert-image-alt" type="text" value="" placeholder="alt" />
-	    <button class="btn btn-success action-simple-wysing-link" data-insert-link="ok" type="button"><i class="icon-ok"></i></button>
-	    <button class="btn btn-danger action-simple-wysing-link" data-insert-link="remove" type="button"><i class="icon-remove"></i></button>
+	    <button class="btn btn-success action-simple-wysing-insert" data-insert-link="ok" type="button"><i class="icon-ok"></i></button>
+	    <button class="btn btn-danger action-simple-wysing-insert" data-insert-link="remove" type="button"><i class="icon-remove"></i></button>
 	</div>
 	<form name="compForm">
 		<div class="well" contenteditable="true" id="richTextEditor" placeholder="Enter text..."></div>
