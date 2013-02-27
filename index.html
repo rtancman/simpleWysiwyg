@@ -90,38 +90,37 @@ var simpleWysiwyg = function(element,options){
 			return false;
 		}		
 	};
+	this.enableOptions = function(action){
+		var tabOptions = $('#toolbar-1 .simple-wysing-options-' + action + '.off'),
+		btn 		   = $('#toolbar-1 .action-simple-wysing-' + action),
+		listOptions    = $('#toolbar-1 .simple-wysing-needs-option');
+		btn.on('click',function(){
+			tabOptions.slideDown('fast', function(){$(this).removeClass('off');} );
+		});		
+	};
+	this.disableOptions = function(action){
+		var tabOptions = $('#toolbar-1 .simple-wysing-options-' + action);
+		tabOptions.slideUp('fast', function(){$(this).addClass('off');} );
+	};
 	this.insertLink = function(){
-		var obj = this, value, opt, tabInsertLink = $('#toolbar-1 .simple-wysing-options-link');
-		$('#toolbar-1 .bootstrap-wysing-toolbar .action-simple-wysing-link').live('click',function(){
-			tabInsertLink.slideDown('slow', function() {
-				$(this).removeClass('off');
-			});
-		});
+		var obj = this, value, opt;
+		this.enableOptions('link');
 		$('#toolbar-1 .simple-wysing-options-link .action-simple-wysing-insert').live('click',function(){
 			opt = $(this).attr('data-insert-link');
 			if(opt == "ok"){
 				value = $("#toolbar-1 .simple-wysing-insert-link .simple-wysing-insert-link-url").val();
 				obj.formatDoc('createlink',value);
 			}
-			tabInsertLink.slideUp('slow', function() {
-				$(this).addClass('off');
-			});
+			obj.disableOptions('link');
 		});
 	};
 	this.createEmbed = function(){
 		document.execCommand('insertHTML', false, '<span>'+t+'</span>'); 
 	  	this.oDoc.focus();
 	};
-	this.loadOptions = function(){
-		
-	};
 	this.insertImage = function(){
-		var obj = this, range = null, selection = null, img = null, id, src, width, height, alt, position, opt, tabInsertLink = $('#toolbar-1 .simple-wysing-options-image');
-		$('#toolbar-1 .bootstrap-wysing-toolbar .action-simple-wysing-image').live('click',function(){
-			tabInsertLink.slideDown('slow', function() {
-				$(this).removeClass('off');
-			});
-		});
+		var obj = this, range = null, selection = null, img = null, id, src, width, height, alt, position, opt;
+		obj.enableOptions('image');
 		$('#toolbar-1 .simple-wysing-options-image .action-simple-wysing-insert').live('click',function(){
 			opt = $(this).attr('data-insert-link');
 			console.log('aaa');
@@ -142,17 +141,14 @@ var simpleWysiwyg = function(element,options){
 				range.insertNode(img);
 				obj.oDoc.focus();
 			}
-			tabInsertLink.slideUp('slow', function() {
-				$(this).addClass('off');
-			});
+			obj.disableOptions('image');
 		});		
 	};
 	this.insertByAction = function(){
-		var obj = this, action, value;
-		$('#toolbar-1 .bootstrap-wysing-toolbar .action-simple-wysing').live('click',function(){
-			objsimpleWysiwyg.loadAction(this);
-			action = $(btnElement).attr('data-command');
-			value = $(btnElement).attr('data-command-value');
+		var obj = this, action, value, btn = $('#toolbar-1 .bootstrap-wysing-toolbar .action-simple-wysing');
+		btn.live('click',function(){
+			action 	= $(this).attr('data-command');
+			value 	= $(this).attr('data-command-value');
 			obj.formatDoc(action,value);		
 		});
 	};
@@ -169,6 +165,8 @@ var simpleWysiwyg = function(element,options){
   	if (document.compForm.switchMode.checked) { 
   		this.setDocMode(true); 
   	}
+
+  	//load actions
   	this.insertByAction();
   	this.insertLink();
   	this.insertImage();
@@ -242,5 +240,3 @@ $(document).ready(function(){
 	</form>
 </div>
 </div>
-
-
