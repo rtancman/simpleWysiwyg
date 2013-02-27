@@ -105,18 +105,40 @@ var simpleWysiwyg = function(element,options){
 	this.insertLink = function(){
 		var obj = this, value, opt;
 		this.enableOptions('link');
-		$('#toolbar-1 .simple-wysing-options-link .action-simple-wysing-insert').live('click',function(){
+		$('#toolbar-1 .simple-wysing-options-link .action-simple-wysing-insert').on('click',function(){
 			opt = $(this).attr('data-insert-link');
 			if(opt == "ok"){
-				value = $("#toolbar-1 .simple-wysing-insert-link .simple-wysing-insert-link-url").val();
+				value = $("#toolbar-1 .simple-wysing-options-link .simple-wysing-insert-link-url").val();
 				obj.formatDoc('createlink',value);
 			}
 			obj.disableOptions('link');
 		});
 	};
-	this.createEmbed = function(){
-		document.execCommand('insertHTML', false, '<span>'+t+'</span>'); 
-	  	this.oDoc.focus();
+	this.insertLabelBadge = function(){
+		var obj 	= this,
+		value 		= "",
+		btn 		= $('#toolbar-1 .action-simple-wysing-label-badge');
+		btn.on('click',function(){
+			value = $(this).attr('data-command-class');
+			document.execCommand('insertHTML', false, '<span class="'+value+'">'+obj.getDocumentContentSelection()+'</span>'); 
+		  	obj.oDoc.focus();
+		});
+	};
+	this.insertEmbed = function(){
+		var obj 	= this,
+		value 		= "",
+		opt 		= "",
+		btn 		= $('#toolbar-1 .simple-wysing-options-embed .action-simple-wysing-insert');
+		this.enableOptions('embed');
+		btn.on('click',function(){
+			opt = $(this).attr('data-insert-link');
+			if(opt == "ok"){
+				value = $("#toolbar-1 .simple-wysing-options-embed .simple-wysing-insert-embed-tag").val();
+				document.execCommand('insertHTML', false, value); 
+		  		obj.oDoc.focus();
+			}
+			obj.disableOptions('embed');
+		});
 	};
 	this.insertImage = function(){
 		var obj = this, range = null, selection = null, img = null, id, src, width, height, alt, position, opt;
@@ -170,6 +192,8 @@ var simpleWysiwyg = function(element,options){
   	this.insertByAction();
   	this.insertLink();
   	this.insertImage();
+  	this.insertLabelBadge();
+  	this.insertEmbed();
 }
 var objsimpleWysiwyg = null;
 $(document).ready(function(){
@@ -208,9 +232,9 @@ $(document).ready(function(){
 				<a title="Outdent" data-command="outdent" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-indent-right"></i> </a>
 				<a title="Indent" data-command="indent" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-indent-left"></i> </a>
 				
-				<a title="Indent" data-command="justifyleft" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-align-left"></i> </a>
-				<a title="Indent" data-command="justifycenter" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-align-center"></i> </a>
-				<a title="Indent" data-command="justifyright" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-align-right"></i> </a>
+				<a title="justify left" data-command="justifyleft" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-align-left"></i> </a>
+				<a title="justify center" data-command="justifycenter" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-align-center"></i> </a>
+				<a title="justify right" data-command="justifyright" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-align-right"></i> </a>
 				
 				<a title="Undo" data-command="undo" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-chevron-left"></i></a>
 				<a title="Redo" data-command="redo" class="btn action-simple-wysing" href="javascript:;" unselectable="on"><i class="icon-chevron-right"></i></a>
@@ -220,7 +244,34 @@ $(document).ready(function(){
 			    <a title="Insert Embed" data-command="createembed" class="btn action-simple-wysing-embed" href="javascript:;" unselectable="on"><i class="icon-facetime-video"></i> </a>
 			</div>
 		</li>
+		<li>
+			<div class="btn-group">
+				<a title="Labels and Badges" data-toggle="dropdown" class="btn dropdown-toggle" href="javascript:;" unselectable="on"><i class="icon-bookmark"></i> <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a href="javascript:;">Labels</a></li>
+					<li><a class="action-simple-wysing-label-badge" data-command="insertHTML" data-command-class="label" href="javascript:;" unselectable="on"><span class="label">Default</span></a></li>
+					<li><a class="action-simple-wysing-label-badge" data-command="insertHTML" data-command-class="label label-success" href="javascript:;" unselectable="on"><span class="label label-success">Success</span></a></li>
+					<li><a class="action-simple-wysing-label-badge" data-command="insertHTML" data-command-class="label label-warning" href="javascript:;" unselectable="on"><span class="label label-warning">Warning</span></a></li>
+					<li><a class="action-simple-wysing-label-badge" data-command="insertHTML" data-command-class="label label-important" href="javascript:;" unselectable="on"><span class="label label-important">Important</span></a></li>
+					<li><a class="action-simple-wysing-label-badge" data-command="insertHTML" data-command-class="label label-info" href="javascript:;" unselectable="on"><span class="label label-info">Info</span></a></li>
+					<li><a class="action-simple-wysing-label-badge" data-command="insertHTML" data-command-class="label label-inverse" href="javascript:;" unselectable="on"><span class="label label-inverse">Inverse</span></a></li>
+					<li class="divider"></li>
+					<li><a href="javascript:;">Badges</a></li>
+					<li><a class="action-simple-wysing-label-badge" data-command="insertHTML" data-command-class="badge" href="javascript:;" unselectable="on"><span class="badge">1</span></a></li>
+					<li><a class="action-simple-wysing-label-badge" data-command="insertHTML" data-command-class="badge badge-success" href="javascript:;" unselectable="on"><span class="badge badge-success">2</span></a></li>
+					<li><a class="action-simple-wysing-label-badge" data-command="insertHTML" data-command-class="badge badge-warning" href="javascript:;" unselectable="on"><span class="badge badge-warning">3</span></a></li>
+					<li><a class="action-simple-wysing-label-badge" data-command="insertHTML" data-command-class="badge badge-important" href="javascript:;" unselectable="on"><span class="badge badge-important">4</span></a></li>
+					<li><a class="action-simple-wysing-label-badge" data-command="insertHTML" data-command-class="badge badge-info" href="javascript:;" unselectable="on"><span class="badge badge-info">7</span></a></li>
+					<li><a class="action-simple-wysing-label-badge" data-command="insertHTML" data-command-class="badge badge-inverse" href="javascript:;" unselectable="on"><span class="badge badge-inverse">8</span></a></li>				
+				</ul>
+			</div>
+		</li>
 	</ul>
+	<div class="simple-wysing-needs-option simple-wysing-options-embed off">
+	    <input class="span4 simple-wysing-input-action simple-wysing-insert-embed-tag" id="appendedInputButton" type="text" value="" placeholder="input value" />
+	    <button class="btn btn-success action-simple-wysing-insert" data-insert-link="ok" type="button"><i class="icon-ok"></i></button>
+	    <button class="btn btn-danger action-simple-wysing-insert" data-insert-link="remove" type="button"><i class="icon-remove"></i></button>
+	</div>
 	<div class="simple-wysing-needs-option simple-wysing-options-link off">
 	    <input class="span4 simple-wysing-input-action simple-wysing-insert-link-url" id="appendedInputButton" type="text" value="http://" />
 	    <button class="btn btn-success action-simple-wysing-insert" data-insert-link="ok" type="button"><i class="icon-ok"></i></button>
