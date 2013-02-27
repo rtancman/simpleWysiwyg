@@ -32,12 +32,11 @@ ul.bootstrap-wysing-toolbar .btn{
 var simpleWysiwyg = function(element,options){
 	this.simpleWysiwygOptions = {};
 	this.setDocMode = function(bToSource) {
-	  var oContent,
-	  oDoc=this.oDoc;
+	  var oContent,oPre;
 	  if (bToSource) {
-	    oContent = document.createTextNode(oDoc.html());
-	    oDoc.html("");
-	    var oPre = document.createElement("pre");
+	    oContent = document.createTextNode(this.oDoc.html());
+	    this.oDoc.html("");
+	    oPre = document.createElement("pre");
 	    this.oDoc.contentEditable = false;
 	    oPre.id = "sourceText";
 	    oPre.contentEditable = true;
@@ -47,9 +46,7 @@ var simpleWysiwyg = function(element,options){
 	    if (document.all) {
 	      this.oDoc.text(this.oDoc.html());
 	    } else {
-	      oContent = document.createRange();
-	      oContent.selectNodeContents(oDoc.firstChild);
-	      this.oDoc.html(oContent.toString());
+	      this.oDoc.html(this.oDoc.children().text());
 	    }
 	    this.oDoc.contentEditable = true;
 	  }
