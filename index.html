@@ -111,6 +111,22 @@ var simpleWysiwyg = function(element,options){
 			obj.disableOptions('link');
 		});
 	};
+	this.insertAlerts = function(){
+		var obj 	= this,
+		value 		= "",
+		tagAlert 		= "",
+		btn 		= $('#toolbar-1 .action-simple-wysing-alerts');
+		btn.on('click',function(){
+			value = $(this).attr('data-command-class');
+			tagAlert = '<div class="'+value+'">'+
+		    '<button type="button" class="close" data-dismiss="alert">&times;</button>'+
+		    '<h4>Warning!</h4>'+
+		   	 obj.getDocumentContentSelection()+
+		    '</div>';
+			document.execCommand('insertHTML', false, tagAlert); 
+		  	obj.oDoc.focus();
+		});
+	};
 	this.insertLabelBadge = function(){
 		var obj 	= this,
 		value 		= "",
@@ -191,6 +207,7 @@ var simpleWysiwyg = function(element,options){
   	this.insertImage();
   	this.insertLabelBadge();
   	this.insertEmbed();
+  	this.insertAlerts();
 }
 var objsimpleWysiwyg = null;
 $(document).ready(function(){
@@ -260,6 +277,46 @@ $(document).ready(function(){
 					<li><a class="action-simple-wysing-label-badge" data-command="insertHTML" data-command-class="badge badge-important" href="javascript:;" unselectable="on"><span class="badge badge-important">4</span></a></li>
 					<li><a class="action-simple-wysing-label-badge" data-command="insertHTML" data-command-class="badge badge-info" href="javascript:;" unselectable="on"><span class="badge badge-info">7</span></a></li>
 					<li><a class="action-simple-wysing-label-badge" data-command="insertHTML" data-command-class="badge badge-inverse" href="javascript:;" unselectable="on"><span class="badge badge-inverse">8</span></a></li>				
+				</ul>
+			</div>
+		</li>
+		<li>
+			<div class="btn-group">
+				<a title="Alerts" data-toggle="dropdown" class="btn dropdown-toggle" href="javascript:;" unselectable="on"><i class="icon-exclamation-sign"></i> <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a href="javascript:;">Alerts</a></li>
+					<li class="span3">
+						<a class="action-simple-wysing-alerts" data-command="insertHTML" data-command-class="alert" href="javascript:;" unselectable="on">
+						    <div class="alert">
+							    <button type="button" class="close">&times;</button>
+							    <strong>Warning!</strong>
+						    </div>
+						</a>
+					</li>
+					<li class="span3">
+						<a class="action-simple-wysing-alerts" data-command="insertHTML" data-command-class="alert alert-error" href="javascript:;" unselectable="on">
+						    <div class="alert alert-error">
+							    <button type="button" class="close">&times;</button>
+							    <strong>Oh snap!</strong>
+						    </div>
+						</a>
+					</li>
+					<li class="span3">
+						<a class="action-simple-wysing-alerts" data-command="insertHTML" data-command-class="alert alert-success" href="javascript:;" unselectable="on">
+						    <div class="alert alert-success">
+							    <button type="button" class="close">&times;</button>
+							    <strong>Well done!</strong>
+						    </div>
+						</a>
+					</li>
+					<li class="span3">
+						<a class="action-simple-wysing-alerts" data-command="insertHTML" data-command-class="alert alert-info" href="javascript:;" unselectable="on">
+						    <div class="alert alert-info">
+							    <button type="button" class="close">&times;</button>
+							    <strong>Heads up!</strong>
+						    </div>
+						</a>
+					</li>
 				</ul>
 			</div>
 		</li>
