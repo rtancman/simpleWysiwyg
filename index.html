@@ -270,8 +270,16 @@
 	<div class="ribbon">
 	  <a rel="me" href="https://github.com/rtancman/simpleWysiwyg">Fork me on GitHub</a>
 	</div>
+	<div id="fb-root"></div>
+	<script>(function(d, s, id) {
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) return;
+	js = d.createElement(s); js.id = id;
+	js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+	fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));</script>
 	<div class="container">
-		<h1>simpleWysiwyg</h1>
+		<h1>simpleWysiwyg <div class="fb-like" data-href="http://rtancman.com.br/simpleWysiwyg" data-send="false" data-layout="button_count" data-width="350" data-show-faces="true" data-font="arial"></div></h1>
 		<p>Simple WYSIWYG editor using <a href="http://twitter.github.com/bootstrap/">Bootstrap.</a></p>
 		<p>Dual licensed under the <a href="https://raw.github.com/rtancman/simpleWysiwyg/master/MIT.txt">MIT</a> and <a href="https://raw.github.com/rtancman/simpleWysiwyg/master/GPL.txt">GPL</a> licenses.</p>		
 		<hr>
@@ -398,6 +406,8 @@
 				<input type="checkbox" name="switchMode" id="richTextEditorSwitchBox" />Show HTML
 			</form>
 		</div>
+		<hr>
+		<div class="fb-comments" data-href="http://rtancman.com.br/simpleWysiwyg" data-width="600" data-num-posts="10"></div>
 	</div>
 </body>
 </html>
